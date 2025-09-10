@@ -43,7 +43,20 @@ Resources:
               OutputArtifacts:
                 - Name: BuildArtifact
               RunOrder: 1
- 
+        
+          DeployRole:
+          Type: AWS::IAM::Role
+          Properties:
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service: cloudformation.amazonaws.com
+          Action: sts:AssumeRole
+          ManagedPolicyArns:
+           - arn:aws:iam::aws:policy/AdministratorAccess
+
         # Deploy Stage
         - Name: Deploy
           Actions:
@@ -58,6 +71,7 @@ Resources:
                 Capabilities: CAPABILITY_NAMED_IAM
                 StackName: MyAppStack
                 TemplatePath: SourceOutput::cloudformation_automated_iac.yml
+                RoleArn: !GetAtt DeployRole.Arn 
               InputArtifacts:
                 - Name: SourceOutput
               RunOrder: 1
