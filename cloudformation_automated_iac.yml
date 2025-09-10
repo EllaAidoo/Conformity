@@ -1,0 +1,162 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Cleaned pipeline using GitHub as source instead of CodeCommit.
+ 
+Resources:
+  # --------------------
+  # Pipeline
+  # --------------------
+  PipelineC660917D:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt PipelineRoleDefaultPolicyE909E812.Arn
+      Stages:
+        # Source Stage (GitHub)
+        - Name: Source
+          Actions:
+            - Name: GitHubSource
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeStarSourceConnection
+                Version: '1'
+              Configuration:
+                ConnectionArn: arn:aws:codeconnections:us-east-1:637612693678:connection/5c074055-287c-4ec2-b8a3-6491f0266bdd
+                FullRepositoryId: EllaAidoo/Conformity
+                BranchName: main
+              OutputArtifacts:
+                - Name: SourceOutput
+              RunOrder: 1
+ 
+        # Build/Test Stage
+        - Name: Test
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              Configuration:
+                ProjectName: !Ref Project2AA28D40
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: BuildArtifact
+              RunOrder: 1
+ 
+        # Deploy Stage
+        - Name: Deploy
+          Actions:
+            - Name: Deploy
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: '1'
+              Configuration:
+                ActionMode: CREATE_UPDATE
+                Capabilities: CAPABILITY_NAMED_IAM
+                StackName: MyAppStack
+                TemplatePath: SourceOutput::cloudformation.yml
+              InputArtifacts:
+                - Name: SourceOutput
+              RunOrder: 1
+ 
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactBucket
+ 
+  # --------------------
+  # Artifact Store
+  # --------------------
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+ 
+  # --------------------
+  # Pipeline Role
+  # --------------------
+  PipelineRoleDefaultPolicyE909E812:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: PipelinePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                 - codeconnections:UseConnection
+                 - codestar-connections:UseConnection
+                Resource: arn:aws:codeconnections:us-east-1:637612693678:connection/5c074055-287c-4ec2-b8a3-6491f0266bdd
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+                Resource:
+                  - !Sub arn:aws:s3:::${ArtifactBucket}
+                  - !Sub arn:aws:s3:::${ArtifactBucket}/*
+              - Effect: Allow
+                Action:
+                  - codebuild:BatchGetBuilds
+                  - codebuild:StartBuild
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
+                  - cloudformation:DescribeStacks
+                  - cloudformation:DeleteStack
+                Resource: '*'
+                
+ 
+  # --------------------
+  # CodeBuild Project
+  # --------------------
+  Project2AA28D40:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: MyBuildProject
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+        Type: LINUX_CONTAINER
+      ServiceRole: !GetAtt ProjectRole.Arn
+      Source:
+        Type: CODEPIPELINE
+ 
+  ProjectRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodeBuildPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                Resource:
+                  - !Sub arn:aws:s3:::${ArtifactBucket}
+                  - !Sub arn:aws:s3:::${ArtifactBucket}/*
