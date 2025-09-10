@@ -118,7 +118,6 @@ Resources:
                   - cloudformation:DescribeStacks
                   - cloudformation:DeleteStack
                 Resource: '*'
-                
  
   # --------------------
   # CodeBuild Project
@@ -137,6 +136,9 @@ Resources:
       Source:
         Type: CODEPIPELINE
  
+  # --------------------
+  # CodeBuild Role
+  # --------------------
   ProjectRole:
     Type: AWS::IAM::Role
     Properties:
@@ -152,6 +154,7 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
+              # S3 access for artifacts
               - Effect: Allow
                 Action:
                   - s3:GetObject
@@ -160,3 +163,10 @@ Resources:
                 Resource:
                   - !Sub arn:aws:s3:::${ArtifactBucket}
                   - !Sub arn:aws:s3:::${ArtifactBucket}/*
+              # CloudWatch Logs access (generalized)
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
