@@ -57,7 +57,7 @@ Resources:
                 ActionMode: CREATE_UPDATE
                 Capabilities: CAPABILITY_NAMED_IAM
                 StackName: MyAppStack
-                TemplatePath: SourceOutput::cloudformation.yml
+                TemplatePath: SourceOutput::cloudformation_automated_iac.yml
               InputArtifacts:
                 - Name: SourceOutput
               RunOrder: 1
