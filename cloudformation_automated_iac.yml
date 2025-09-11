@@ -147,7 +147,7 @@ Resources:
   Project2AA28D40:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: MyBuildProject
+      Name: ConformityBuildProject
       Artifacts:
         Type: CODEPIPELINE
       Environment:
