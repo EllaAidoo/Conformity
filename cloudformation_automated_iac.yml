@@ -290,7 +290,7 @@ Resources:
   ConformityBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: ConformityBuildProject2
+      Name: ConformityBuildProject3
       Artifacts:
         Type: CODEPIPELINE
       Environment:
