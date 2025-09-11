@@ -305,22 +305,22 @@ Resources:
       ServiceRole: !GetAtt ProjectRole.Arn
       Source:
         Type: CODEPIPELINE
-      BuildSpec: |
-        version: 0.2
- 
-        phases:
-          install:
-            runtime-versions:
-              python: 3.9
-            commands:
-              - pip install requests pyyaml
-          build:
-            commands:
-              - echo "Running Conformity scan on app-template.yml..."
-              - python conformity_scan.py app-template.yml
-        artifacts:
-          files:
-            - '**/*'
+        BuildSpec: |
+          version: 0.2
+   
+          phases:
+            install:
+              runtime-versions:
+                python: 3.9
+              commands:
+                - pip install requests pyyaml
+            build:
+              commands:
+                - echo "Running Conformity scan on app-template.yml..."
+                - python conformity_scan.py app-template.yml
+          artifacts:
+            files:
+              - '**/*'
  
   # --------------------
   # Pipeline
