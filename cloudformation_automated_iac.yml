@@ -332,8 +332,8 @@ Resources:
                 Provider: CodeStarSourceConnection
                 Version: '1'
               Configuration:
-                ConnectionArn: arn:aws:codeconnections:us-east-1:YOUR_CONNECTION_ID
-                FullRepositoryId: YOUR_GITHUB_USERNAME/YOUR_REPO
+                ConnectionArn: arn:aws:codeconnections:us-east-1:637612693678:connection/5c074055-287c-4ec2-b8a3-6491f0266bdd
+                FullRepositoryId: EllaAidoo/Conformity
                 BranchName: main
               OutputArtifacts:
                 - Name: SourceOutput
