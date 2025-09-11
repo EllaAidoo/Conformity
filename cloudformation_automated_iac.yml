@@ -56,8 +56,8 @@ Resources:
               Configuration:
                 ActionMode: CREATE_UPDATE
                 Capabilities: CAPABILITY_NAMED_IAM
-                StackName: MyAppStack
-                TemplatePath: SourceOutput::cloudformation_automated_iac.yml
+                StackName: MyApplicationStack
+                TemplatePath: SourceOutput::app-template.yml
                 RoleArn: !GetAtt DeployRole.Arn
               InputArtifacts:
                 - Name: SourceOutput
