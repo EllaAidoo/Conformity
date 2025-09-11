@@ -8,7 +8,7 @@ Resources:
   PipelineC660917D:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      RoleArn: !GetAtt PipelineRoleDefaultPolicyE909E812.Arn
+      RoleArn: !GetAtt PipelineRole.Arn
       Stages:
         # Source Stage (GitHub)
         - Name: Source
@@ -78,7 +78,7 @@ Resources:
   # --------------------
   # Pipeline Role
   # --------------------
-  PipelineRoleDefaultPolicyE909E812:
+  PipelineRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
