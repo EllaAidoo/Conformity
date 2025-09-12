@@ -192,6 +192,19 @@
 #                   - logs:CreateLogStream
 #                   - logs:PutLogEvents
 #                 Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
+
+
+
+
+
+
+
+
+
+
+
+
+
 AWSTemplateFormatVersion: '2010-09-09'
 Description: CI/CD Pipeline with GitHub Source and Conformity Scan integrated in CodeBuild
  
@@ -290,7 +303,7 @@ Resources:
   ConformityBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: ConformityBuildProject3
+      Name: !Sub 'ConformityBuildProject-${AWS::StackId}'
       Artifacts:
         Type: CODEPIPELINE
       Environment:
