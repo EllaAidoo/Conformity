@@ -303,7 +303,7 @@ Resources:
   ConformityBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Sub 'ConformityBuildProject-${AWS::StackId}'
+      Name: !Sub 'ConformityBuildProject-${AWS::AccountId}'
       Artifacts:
         Type: CODEPIPELINE
       Environment:
